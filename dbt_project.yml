@@ -24,6 +24,8 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+vars:
+  divisionname: 'North America'
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -35,8 +37,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 
+on-run-start: "create or replace table audit.qwt_audit_log ( modelid number autoincrement start 1 increment 1 primary key,modelname varchar,starttime datetime,endtime datetime,duration number);"
+on-run-end: "grant select on table audit.qwt_audit_log to role public;"
 models:
-  my_new_project:
-    # Applies to all files under models/example/
-    example:
-      +materialized: table
+  +materialized: view
+  +pre-hook: "insert into audit.qwt_audit_log(modelname, starttime, endtime, duration) values ('{{ this }}', current_timestamp(), null, null);"
+  +post-hook: "update audit.qwt_audit_log set endtime = current_timestamp(), duration = datediff('second', starttime, current_timestamp()) where modelname = '{{ this }}';"
+
+
+

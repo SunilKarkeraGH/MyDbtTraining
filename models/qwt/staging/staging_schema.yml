@@ -1,0 +1,39 @@
+version: 2
+models:
+  - name: stg_customer
+    description : "{{doc('customers')}}"
+    columns:
+      - name: customerid
+        description: Uniquely identifies each customer in customers table
+        tests:
+          - unique
+          - not_null
+  - name: stg_product
+    columns:
+      - name: productid
+        description: This model extracts all the products master data from MDM
+        tests:
+          - unique
+          - not_null
+  - name: stg_orders
+    columns:
+      - name: customerid
+        description: High level order view for the sales
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customerid
+  - name: stg_office
+    columns:
+      - name: city
+        description: High level details of the office
+        tests:
+          - accepted_values:
+              values: ['paris', 'Nice', 'Seattle']
+  - name: stg_order_details
+    columns:
+      - name: orderid
+        description: High level details of order details
+        tests:
+          - is_even

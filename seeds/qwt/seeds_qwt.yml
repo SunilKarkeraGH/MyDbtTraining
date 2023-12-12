@@ -1,0 +1,11 @@
+version: 2
+seeds:
+- name: divisions
+  config:
+    schema: SEEDS
+- name: categories
+  config:
+    schema: SEEDS
+- name: emoplyee
+  config:
+    schema: SEEDS
